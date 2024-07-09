@@ -1,12 +1,13 @@
 'use client';
 
-import React from 'react'
+import React, {useState} from 'react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import "leaflet/dist/leaflet.css";
 import { Icon } from 'leaflet';
+import eventsData from './historyEvents';
 
 
-interface HistoricalEvent {
+export interface HistoricalEvent {
     id: number;
     title: string;
     description: string;
@@ -14,35 +15,27 @@ interface HistoricalEvent {
     category: string;
 }
 
-const eventsData: HistoricalEvent[] = [
-    {
-        id: 1,
-        title: "D-Day Commences!",
-        description: "Allied Forces landed in Normany on June 6, 1944!",
-        position: [49.4144, -0.8322],
-        category: "War"
-    },
-    {
-        id: 1,
-        title: "Italia is Reunited!",
-        description: "Garibaldi and the Baguettes strike back once again!!",
-        position: [49.9029, 12.4545],
-        category: "Art"
-    }
-];
 
 
 
 
 const defaultPosition: [number, number] = [51.505, -0.09]
 
+const emptyStar = <i className = "fa-regular fa-star">✰</i>;
+const fullStar = <i className = "fa-solid fa-star">⭐</i>
+
 function MapsApp() {
     const icon: Icon = new Icon ({
         iconUrl: 'marker.svg',
         iconSize: [25, 41],
         iconAnchor: [12, 41]
-
     })
+
+    const [favorites, setFavorites] = useState<number[]>(() => {
+        const savedFavorites = localStorage.getItem('favorites');
+        return savedFavorites ? JSON.parse(savedFavorites) : []
+    })
+
   return (
     <div className = "content" >
       <div className = "flex flex-col">
@@ -65,20 +58,23 @@ function MapsApp() {
                     return (
                     <Marker position={event.position} icon = {icon}>
                         <Popup>
-                            <h1 className = "text-center">{event.title}</h1>
+                            <h1 className = "text-center text-base font-medium">{event.title}</h1>
                             <i>{event.description}</i>
+                            <br></br>
+                            <div className = "flex items-center justify-center" >
+                                <button className="shadow-[0_4px_14px_0_rgb(0,118,255,39%)] hover:shadow-[0_6px_20px_rgba(0,118,255,23%)] hover:bg-[rgba(0,118,255,0.9)] px-8 py-2 bg-[#0070f3] rounded-md text-white font-light transition duration-200 ease-linear">
+                                    <span className = "px-2">
+                                        {emptyStar}
+                                    </span>
+                                    Favorite
+                                </button>
+                            </div>
+                            
                         </Popup>
                     </Marker>
-                    )
-                    
+                    )  
                 })
             }
-
-            <Marker position={defaultPosition} icon = {icon}>
-              <Popup>
-                Beepoo <br /> I love pop ups!!!!!!!!!!
-              </Popup>
-            </Marker>
           </MapContainer>
         </div>
         
